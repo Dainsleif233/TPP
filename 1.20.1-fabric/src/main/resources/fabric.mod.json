@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "tpp",
+  "version": "${version}",
+  "name": "TPP",
+  "description": "Allow teleportation within the team.",
+  "authors": ["Dainsleif"],
+  "contact": {},
+  "license": "GPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "top.syshub.tpp.Tpp"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}

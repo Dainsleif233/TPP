@@ -1,4 +1,4 @@
-package top.syshub.tpp;
+package top.syshub.tpp.modules;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,11 +20,9 @@ public class TppCommand {
         dispatcher.register(CommandManager.literal("tpp")
                 .then(CommandManager.argument("destination", EntityArgumentType.player())
                         .suggests((context, builder) -> {
-                            // 获取执行者信息
                             ServerPlayerEntity executor = context.getSource().getPlayer();
-                            if (executor == null) return Suggestions.empty();
+                            if (executor == null || executor.getScoreboardTeam() == null) return Suggestions.empty();
 
-                            // 构建动态建议列表
                             return suggestMatching(
                                     context.getSource().getServer().getPlayerManager().getPlayerList()
                                             .stream()

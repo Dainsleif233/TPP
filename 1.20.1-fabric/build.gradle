@@ -12,7 +12,6 @@ base {
 
 loom {
     splitEnvironmentSourceSets()
-
     mods {
         "tpp" {
             sourceSet sourceSets.main
@@ -21,8 +20,7 @@ loom {
     }
 }
 
-repositories {
-}
+repositories {}
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -37,7 +35,6 @@ processResources {
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
     filteringCharset "UTF-8"
-
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
@@ -66,7 +63,6 @@ jar {
     }
 }
 
-// configure the maven publication
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
@@ -74,8 +70,6 @@ publishing {
             from components.java
         }
     }
-
-    repositories {
-    }
+    repositories {}
 }
 

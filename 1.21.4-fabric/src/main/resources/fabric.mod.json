@@ -3,14 +3,14 @@
   "id": "tpp",
   "version": "${version}",
   "name": "TPP",
-  "description": "Allow teleportation within the team.",
-  "authors": [],
+  "description": "A team mini-game tool for Minecraft.",
+  "authors": ["Dainsleif"],
   "contact": {},
   "license": "GPL-3.0",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "top.syshub.tpp.Tpp"
+      "top.syshub.tpp.TPP"
     ]
   },
   "depends": {

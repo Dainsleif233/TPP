@@ -15,7 +15,7 @@ public class Config {
         try {
             if (!Files.exists(configFile)) {
                 ConfigClass config = new ConfigClass();
-                config.tpp = new ConfigClass.Tpp();
+                config.tpp = new ConfigClass.TppConfig();
                 config.tpp.enabled = true;
 
                 TomlWriter writer = new TomlWriter();

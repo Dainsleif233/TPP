@@ -4,8 +4,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 public class Tpp {
     public static void Initialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            TppCommand.register(dispatcher);
-        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TppCommand.register(dispatcher));
     }
 }

@@ -1,11 +1,14 @@
 package top.syshub.tpp.modules;
 
 import com.moandjiezana.toml.TomlWriter;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import top.syshub.tpp.TPP;
 
 public class Config {
 
@@ -23,6 +26,17 @@ public class Config {
             }
         } catch (IOException e) {
             System.err.println("Failed to create config file: " + e.getMessage());
+        }
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ConfigCommand.register(dispatcher));
+    }
+
+    public static void SaveConfig() {
+        try {
+            TomlWriter writer = new TomlWriter();
+            writer.write(TPP.config, configFile.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

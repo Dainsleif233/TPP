@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Set;
 
 import static net.minecraft.command.CommandSource.suggestMatching;
+import static top.syshub.tpp.TPP.config;
 
 public class TppCommand {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,7 +22,7 @@ public class TppCommand {
                 .then(CommandManager.argument("destination", EntityArgumentType.player())
                         .suggests((context, builder) -> {
                             ServerPlayerEntity executor = context.getSource().getPlayer();
-                            if (executor == null || executor.getScoreboardTeam() == null) return Suggestions.empty();
+                            if (!config.tpp.enabled || executor == null || executor.getScoreboardTeam() == null) return Suggestions.empty();
 
                             return suggestMatching(
                                     context.getSource().getServer().getPlayerManager().getPlayerList()
@@ -41,6 +42,7 @@ public class TppCommand {
     }
 
     private static int executeTpp(@NotNull ServerCommandSource source, ServerPlayerEntity destination) throws CommandSyntaxException {
+        checkCommandEnabled();
         ServerPlayerEntity sourcePlayer = source.getPlayerOrThrow();
         checkSameTeam(sourcePlayer, destination);
 
@@ -52,6 +54,12 @@ public class TppCommand {
                 true
         );
         return 0;
+    }
+
+    private static void checkCommandEnabled() throws CommandSyntaxException {
+        if (!config.tpp.enabled) {
+            throw new SimpleCommandExceptionType(Text.literal("命令未启用")).create();
+        }
     }
 
     private static void checkSameTeam(@NotNull ServerPlayerEntity source, ServerPlayerEntity target) throws CommandSyntaxException {

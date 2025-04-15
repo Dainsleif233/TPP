@@ -9,6 +9,8 @@ import java.nio.file.Path;
 
 public class TPP implements ModInitializer {
 
+    public static ConfigClass config;
+
     private ConfigClass loadConfig() {
 
         final Path configFile = FabricLoader.getInstance().getConfigDir().resolve("tpp.toml");
@@ -20,14 +22,8 @@ public class TPP implements ModInitializer {
     @Override
     public void onInitialize() {
         Config.Initialize();
-        ConfigClass config = loadConfig();
+        config = loadConfig();
 
-        try {
-            if(config.tpp.enabled) {
-                Tpp.Initialize();
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to initialize: " + e.getMessage());
-        }
+        Tpp.Initialize();
     }
 }

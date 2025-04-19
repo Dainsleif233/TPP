@@ -3,11 +3,12 @@ package top.syshub.tpp.modules;
 import com.moandjiezana.toml.TomlWriter;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import top.syshub.tpp.TPP;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static top.syshub.tpp.TPP.config;
 
 public class Config {
 
@@ -17,7 +18,6 @@ public class Config {
         try {
             if (!Files.exists(configFile)) {
                 ConfigClass config = new ConfigClass();
-                config.tpp = new ConfigClass.TppConfig();
                 config.tpp.enabled = true;
 
                 TomlWriter writer = new TomlWriter();
@@ -33,7 +33,7 @@ public class Config {
     public static void SaveConfig() {
         try {
             TomlWriter writer = new TomlWriter();
-            writer.write(TPP.config, configFile.toFile());
+            writer.write(config, configFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

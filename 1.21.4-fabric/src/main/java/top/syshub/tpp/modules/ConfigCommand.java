@@ -18,11 +18,13 @@ import static net.minecraft.command.CommandSource.suggestMatching;
 public class ConfigCommand {
 
     private static final Map<String, List<String>> MODULES = Map.of(
-            "tpp", List.of("enabled")
+            "tpp", List.of("enabled", "cooldown", "target")
     );
 
     private static final Map<String, List<String>> CONFIGS = Map.of(
-            "enabled", List.of("true", "false")
+            "enabled", List.of("true", "false"),
+            "cooldown", List.of("0", "10", "20", "30", "44", "60"),
+            "target", List.of("teammates", "allplayers")
     );
 
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -74,6 +76,12 @@ public class ConfigCommand {
                             throw new SimpleCommandExceptionType(Text.literal("unknown config")).create();
                         case "enabled":
                             TPP.config.tpp.enabled = Boolean.parseBoolean(value);
+                            break;
+                        case "cooldown":
+                            TPP.config.tpp.cooldown = Integer.parseInt(value);
+                            break;
+                        case "target":
+                            TPP.config.tpp.target = value;
                             break;
                     }
                     break;

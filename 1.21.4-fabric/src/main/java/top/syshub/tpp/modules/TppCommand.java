@@ -19,40 +19,45 @@ import static top.syshub.tpp.TPP.config;
 public class TppCommand {
     public static void register(@NotNull CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("tpp")
-                .then(CommandManager.argument("destination", EntityArgumentType.player())
+                .then(CommandManager.argument("target", EntityArgumentType.player())
                         .suggests((context, builder) -> {
                             ServerPlayerEntity executor = context.getSource().getPlayer();
-                            if (!config.tpp.enabled || executor == null || executor.getScoreboardTeam() == null) return Suggestions.empty();
+                            if (!config.tpp.enabled || executor == null ) return Suggestions.empty();
+                            if (config.tpp.target.equals("teammates") && executor.getScoreboardTeam() == null) return Suggestions.empty();
 
                             return suggestMatching(
-                                    context.getSource().getServer().getPlayerManager().getPlayerList()
-                                            .stream()
+                                    context.getSource().getServer().getPlayerManager().getPlayerList().stream()
                                             .filter(p -> p != executor)
-                                            .filter(p -> p.getScoreboardTeam() == executor.getScoreboardTeam())
-                                            .map(p -> p.getName().getString()),
+                                            .filter(p -> switch (config.tpp.target) {
+                                                case "teammates" -> p.getScoreboardTeam() == executor.getScoreboardTeam();
+                                                case "allplayers" -> true;
+                                                default -> false;
+                                            }).map(p -> p.getName().getString()),
                                     builder
                             );
                         })
                         .executes(context -> executeTpp(
                                 context.getSource(),
-                                EntityArgumentType.getPlayer(context, "destination")
+                                EntityArgumentType.getPlayer(context, "target")
                         ))
                 )
         );
     }
 
-    private static int executeTpp(@NotNull ServerCommandSource source, ServerPlayerEntity destination) throws CommandSyntaxException {
+    private static int executeTpp(@NotNull ServerCommandSource source, ServerPlayerEntity target) throws CommandSyntaxException {
         checkCommandEnabled();
         ServerPlayerEntity sourcePlayer = source.getPlayerOrThrow();
-        checkSameTeam(sourcePlayer, destination);
+        checkCooldown(sourcePlayer);
+        checkSameTeam(sourcePlayer, target);
 
         sourcePlayer.teleport(
-                destination.getServerWorld(),
-                destination.getX(), destination.getY(), destination.getZ(),
+                target.getServerWorld(),
+                target.getX(), target.getY(), target.getZ(),
                 Set.of(),
-                destination.getYaw(), destination.getPitch(),
+                target.getYaw(), target.getPitch(),
                 true
         );
+        TppCooldownManager.updateLastUsed(sourcePlayer);
         return 0;
     }
 
@@ -62,7 +67,17 @@ public class TppCommand {
         }
     }
 
+    private static void checkCooldown(@NotNull ServerPlayerEntity source) throws CommandSyntaxException {
+        if (config.tpp.cooldown > 0) {
+            long remaining = TppCooldownManager.getCooldownRemaining(source);
+            if (remaining > 0) {
+                throw new SimpleCommandExceptionType(Text.literal("传送冷却还剩 " + remaining / 1000 + " 秒")).create();
+            }
+        }
+    }
+
     private static void checkSameTeam(@NotNull ServerPlayerEntity source, ServerPlayerEntity target) throws CommandSyntaxException {
+        if (config.tpp.target.equals("allplayers")) return;
         if (source.getScoreboardTeam() == null) {
             throw new SimpleCommandExceptionType(Text.literal("你不在任何队伍中")).create();
         }

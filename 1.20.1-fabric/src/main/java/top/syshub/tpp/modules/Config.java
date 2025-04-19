@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import top.syshub.tpp.TPP;
+import static top.syshub.tpp.TPP.config;
 
 public class Config {
 
@@ -33,7 +33,7 @@ public class Config {
     public static void SaveConfig() {
         try {
             TomlWriter writer = new TomlWriter();
-            writer.write(TPP.config, configFile.toFile());
+            writer.write(config, configFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,10 +1,11 @@
 package top.syshub.tpp.modules;
 
 import net.minecraft.server.network.ServerPlayerEntity;
-import top.syshub.tpp.TPP;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static top.syshub.tpp.TPP.config;
 
 public class TppCooldownManager {
     private static final Map<ServerPlayerEntity, Long> lastUsedTimes = new HashMap<>();
@@ -18,7 +19,7 @@ public class TppCooldownManager {
         if (lastUsed == null) return 0;
 
         long timePassed = System.currentTimeMillis() - lastUsed;
-        long remaining = (TPP.config.tpp.cooldown * 1000L) - timePassed;
+        long remaining = (config.tpp.cooldown * 1000L) - timePassed;
         return Math.max(remaining, 0);
     }
 }

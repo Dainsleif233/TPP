@@ -42,6 +42,7 @@ public class TppCommand {
     private static int executeTpp(@NotNull ServerCommandSource source, ServerPlayerEntity destination) throws CommandSyntaxException {
         checkCommandEnabled();
         ServerPlayerEntity sourcePlayer = source.getPlayerOrThrow();
+        checkCooldown(sourcePlayer);
         checkSameTeam(sourcePlayer, destination);
 
         sourcePlayer.teleport(
@@ -49,12 +50,22 @@ public class TppCommand {
                 destination.getX(), destination.getY(), destination.getZ(),
                 destination.getYaw(), destination.getPitch()
         );
+        TppCooldownManager.updateLastUsed(sourcePlayer);
         return 0;
     }
 
     private static void checkCommandEnabled() throws CommandSyntaxException {
         if (!config.tpp.enabled) {
             throw new SimpleCommandExceptionType(Text.literal("命令未启用")).create();
+        }
+    }
+
+    private static void checkCooldown(@NotNull ServerPlayerEntity source) throws CommandSyntaxException {
+        if (config.tpp.cooldown > 0) {
+            long remaining = TppCooldownManager.getCooldownRemaining(source);
+            if (remaining > 0) {
+                throw new SimpleCommandExceptionType(Text.literal("传送冷却还剩 " + remaining / 1000 + " 秒")).create();
+            }
         }
     }
 

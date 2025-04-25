@@ -21,15 +21,14 @@ public class TppCommand {
                         .suggests((context, builder) -> {
                             ServerPlayerEntity executor = context.getSource().getPlayer();
                             if (!config.tpp.enabled || executor == null ) return Suggestions.empty();
-                            if (config.tpp.target.equals("teammates") && executor.getScoreboardTeam() == null) return Suggestions.empty();
+                            if (config.tpp.target.equals(ConfigClass.TppConfig.Target.teammates) && executor.getScoreboardTeam() == null) return Suggestions.empty();
 
                             return suggestMatching(
                                     context.getSource().getServer().getPlayerManager().getPlayerList().stream()
                                             .filter(p -> p != executor)
                                             .filter(p -> switch (config.tpp.target) {
-                                                case "teammates" -> p.getScoreboardTeam() == executor.getScoreboardTeam();
-                                                case "allplayers" -> true;
-                                                default -> false;
+                                                case teammates -> p.getScoreboardTeam() == executor.getScoreboardTeam();
+                                                case allplayers -> true;
                                             }).map(p -> p.getName().getString()),
                                     builder
                             );
@@ -73,7 +72,7 @@ public class TppCommand {
     }
 
     private static void checkSameTeam(@NotNull ServerPlayerEntity source, ServerPlayerEntity target) throws CommandSyntaxException {
-        if (config.tpp.target.equals("allplayers")) return;
+        if (config.tpp.target.equals(ConfigClass.TppConfig.Target.allplayers)) return;
         if (source.getScoreboardTeam() == null) {
             throw new SimpleCommandExceptionType(Text.literal("你不在任何队伍中")).create();
         }

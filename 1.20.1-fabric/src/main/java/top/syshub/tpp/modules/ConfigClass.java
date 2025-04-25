@@ -6,6 +6,10 @@ public class ConfigClass {
     public static class TppConfig {
         public boolean enabled = false;
         public int cooldown = 0;
-        public String target = "teammates";
+        Target target = Target.teammates;
+        public enum Target {
+            teammates,
+            allplayers
+        }
     }
 }

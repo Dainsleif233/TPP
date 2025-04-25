@@ -2,6 +2,7 @@ package top.syshub.tpp.modules;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -65,29 +66,30 @@ public class ConfigCommand {
         );
     }
 
-    private static int executeConfigCommand(String module, String config, String value) {
-        try {
-            switch (module) {
-                default:
-                    throw new SimpleCommandExceptionType(Text.literal("unknown module")).create();
-                case "tpp":
-                    switch (config) {
-                        default:
-                            throw new SimpleCommandExceptionType(Text.literal("unknown config")).create();
-                        case "enabled":
-                            TPP.config.tpp.enabled = Boolean.parseBoolean(value);
-                            break;
-                        case "cooldown":
-                            TPP.config.tpp.cooldown = Integer.parseInt(value);
-                            break;
-                        case "target":
-                            TPP.config.tpp.target = value;
-                            break;
-                    }
-                    break;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    private static int executeConfigCommand(String module, String config, String value) throws CommandSyntaxException {
+        validateConfig(module, config, value);
+
+        switch (module) {
+            case "tpp":
+                switch (config) {
+                    case "enabled":
+                        TPP.config.tpp.enabled = Boolean.parseBoolean(value);
+                        break;
+                    case "cooldown":
+                        TPP.config.tpp.cooldown = Integer.parseInt(value);
+                        break;
+                    case "target":
+                        switch (value) {
+                            case "teammates":
+                                TPP.config.tpp.target = ConfigClass.TppConfig.Target.teammates;
+                                break;
+                            case "allplayers":
+                                TPP.config.tpp.target = ConfigClass.TppConfig.Target.allplayers;
+                                break;
+                        }
+                        break;
+                }
+                break;
         }
 
         return 0;
@@ -97,4 +99,32 @@ public class ConfigCommand {
         Config.SaveConfig();
         return 0;
     }
+
+    private static void validateConfig(String module, String config, String value) throws CommandSyntaxException {
+        if (!MODULES.containsKey(module)) throw new SimpleCommandExceptionType(Text.literal("未知模块")).create();
+
+        switch (config) {
+            default:
+                throw new SimpleCommandExceptionType(Text.literal("未知配置项")).create();
+            case "enabled":
+                if (!value.equals("true") && !value.equals("false")) throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();
+                break;
+            case "cooldown":
+                try {
+                    int num = Integer.parseInt(value);
+                    if (num < 0) throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();
+                } catch (NumberFormatException e) {
+                    throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();
+                }
+                break;
+            case "target":
+                try {
+                    ConfigClass.TppConfig.Target.valueOf(value.toLowerCase());
+                } catch (IllegalArgumentException e) {
+                    throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();
+                }
+                break;
+        }
+    }
+
 }

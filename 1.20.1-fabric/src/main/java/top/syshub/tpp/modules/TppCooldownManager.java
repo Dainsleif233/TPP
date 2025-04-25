@@ -22,4 +22,8 @@ public class TppCooldownManager {
         long remaining = (config.tpp.cooldown * 1000L) - timePassed;
         return Math.max(remaining, 0);
     }
+
+    public static void clearCooldown() {
+        lastUsedTimes.clear();
+    }
 }

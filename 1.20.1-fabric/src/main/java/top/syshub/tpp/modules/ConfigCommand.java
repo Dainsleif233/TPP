@@ -24,7 +24,7 @@ public class ConfigCommand {
 
     private static final Map<String, List<String>> CONFIGS = Map.of(
             "enabled", List.of("true", "false"),
-            "cooldown", List.of("0", "10", "20", "30", "44", "60"),
+            "cooldown", List.of("clear", "0", "10", "20", "30", "44", "60"),
             "target", List.of("teammates", "allplayers")
     );
 
@@ -76,6 +76,10 @@ public class ConfigCommand {
                         TPP.config.tpp.enabled = Boolean.parseBoolean(value);
                         break;
                     case "cooldown":
+                        if (value.equals("clear")) {
+                            TppCooldownManager.clearCooldown();
+                            break;
+                        }
                         TPP.config.tpp.cooldown = Integer.parseInt(value);
                         break;
                     case "target":
@@ -110,6 +114,7 @@ public class ConfigCommand {
                 if (!value.equals("true") && !value.equals("false")) throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();
                 break;
             case "cooldown":
+                if (value.equals("clear")) break;
                 try {
                     int num = Integer.parseInt(value);
                     if (num < 0) throw new SimpleCommandExceptionType(Text.literal("参数错误")).create();

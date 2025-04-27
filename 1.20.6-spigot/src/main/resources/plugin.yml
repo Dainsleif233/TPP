@@ -1,5 +1,5 @@
 name: TPP
-version: '1.1.1'
+version: '${version}'
 main: top.syshub.tpp.TPP
 api-version: '1.20'
 load: STARTUP
